@@ -38,11 +38,3 @@ export default async function fetchPictures(hint, page, perPage) {
   return r.data;
 }
 
-/*
-export default function fetchPictures( hint, page, perPage ) {//hint example 'yellow+flowers'
-  return fetch(
-    `${BASIC_URL}/?key=${MY_KEY}&q=${hint}
-    &image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`
-  ).then(r => r.json());
-}
- */

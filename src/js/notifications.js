@@ -9,6 +9,12 @@
 
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
+const BIG_OPTS = {
+    position: 'center-center',
+    fontSize: '2rem',
+    borderRadius: '2rem',
+}
+
 export {
   init,
   setDefaultMsg as setDefault,
@@ -19,16 +25,16 @@ export {
   showInfo as info
 };
 
-function showError(txt) {
-  Notify.failure(txt);
+function showError(txt, isBig = true) {
+  Notify.failure(txt, isBig ? BIG_OPTS : {});
 }
 
 function showWarning(txt) {
   Notify.warning(txt);
 }
 
-function showInfo(txt) {
-  Notify.info(txt);
+function showInfo(txt, isBig = true) {
+  Notify.info(txt, isBig ? BIG_OPTS : {});
 }
 
 function showSuccess(txt) {
@@ -42,13 +48,15 @@ function init() {
     fontSize: '1.3rem',
     borderRadius: '1rem',
     position: 'right-top', //'right-bottom',
+    cssAnimationDuration: '800',
+    cssAnimationStyle: 'zoom',
     closeButton: true,
     useIcon: false,
     showOnlyTheLastOne: true,
   });
 }
 
-// TODO: not used
+// not used in HW11
 /*
   * default() displays default message, which if empty by default
   * setDefault(txt) sets txt string as default message */

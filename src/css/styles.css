@@ -32,6 +32,7 @@ img {
   font-size: 1.5rem;
   display: flex;
   position: sticky;
+  z-index: 10000;
   top: 0;
   justify-content: center;
   align-items: center;
@@ -42,19 +43,20 @@ img {
 #search-form input {
   height: 3rem;
   width: 21rem;
+  padding: 1rem;
   border-radius: var(--border-radius) 0 0 var(--border-radius);
-  border-right-width: 0;
+  border-width: 0;
 }
 
 #search-form button {
   height: 3rem;
-  width: 2.5rem;
-  padding: 2px;
+  width: 3rem;
   display: inline-block;
-  border-left-width: 0;
+  border-width: 0;
   border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  background-color: #19c2fff7;
   background-image: url('../images/search.svg');
-  background-size: 60%;
+  background-size: 50%;
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
@@ -68,13 +70,29 @@ img {
   height: 6rem;
   width: 6rem;
   padding: 2px;
-  /* display: inline-block; */
   margin:auto;
   background-color: #19c2fff7;
-  border-left-width: 0;
+  border-width: 0;
   border-radius: var(--border-radius) var(--border-radius);
   background-image: url('../images/arrow-down.svg');
   background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+}
+
+#search-form
+button.goit {
+  position: fixed;
+  left: 10%;
+  height: 6rem;
+  width: 6rem;
+  padding: 2px;
+  border-radius: var(--border-radius) var(--border-radius);
+  border-width: 0;
+  background-color: transparent;
+  background-image: url('../images/logo.png');
+  background-size: 100%;
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
@@ -100,6 +118,7 @@ img {
 
 .photo-card {
   flex-basis: 100%;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
     0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
   transition: transform var(--animation-duration) var(--timing-function);
@@ -112,7 +131,9 @@ img {
 
 .photo-card img {
   width: 300px;
-  min-height: 100px;
+  height: 200px;
+  object-fit: cover;
+  /* min-height: 100px; */
   margin: auto;
 }
 
