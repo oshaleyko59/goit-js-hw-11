@@ -28,16 +28,9 @@ import GalleryManager from './js/galleryManager';
 import fetchRandomNoun from './js/fetchRandomNoun';
 import getRandomWord from './js/words';
 
-const infScrAllowed = true;
-
-if (infScrAllowed) {
-  refs.btnLoadMore.remove();
-} else {
-  refs.btnLoadMore.addEventListener('click', loadMore);
-}
 
 const galleryMngr = new GalleryManager({
-  onScrollThreshold: infScrAllowed? loadMore : false,
+  onScrollThreshold: loadMore,
   onSuccess,
   onError,
 });
@@ -55,26 +48,28 @@ refs.form.addEventListener(
   throttle(handleSubmit, CONF.MIN_TIME_BTW_REQS)
 );
 
+document.body.addEventListener('click', refs.handleButtons2FixSLB.bind(refs));
 
 /* ************************ end of sync code *************************** */
 
 function onSuccess(clue, totalHits, loadedHits, hits) {
   show.success(CONF.getImgNumberStr(clue, totalHits, loadedHits));
   refs.appendGallery(hits);
-  if (!infScrAllowed) {
-    refs.showBtnLoadMore();
-  }
+   // refs.showBtnLoadMore();
 }
 
 function onError(e) {
-  if (!infScrAllowed) {
-    refs.hideBtnLoadMore();
-  }
+    //refs.hideBtnLoadMore();
   show.error(e.message);
 }
 
 // *** listener callback for submit
 function handleSubmit(e) {
+  //refs.consoleSLB();
+  if (refs.isSLBon()) {
+    return;
+  }
+
   e.preventDefault();
 
   const inputEl = e.target.elements.searchQuery;
@@ -112,16 +107,21 @@ function handleSubmit(e) {
 
 // *** call-back for GOIT btn listener
 async function handleGoItClick() {
+  //refs.consoleSLB();
+  if (refs.isSLBon()) {
+    return;
+  }
+
   let rand_noun;
   //console.time('randNoun');
-  await  fetchRandomNoun()
-      .then(r => (rand_noun = r.data.word))
+  await fetchRandomNoun()
+    .then(r => (rand_noun = r.data.word))
     .catch(e => {
       console.log('fetchRandomNoun:', e.message);
       // it's a substitution for site failure - happens from time to time :(((
       rand_noun = getRandomWord();
-      });
- // console.timeEnd('randNoun');  console.log(rand_noun);
+    });
+  // console.timeEnd('randNoun'); 
   refs.input.value = rand_noun;
   refs.clearGalleryContent();
   galleryMngr.startOver(rand_noun.toLowerCase());
