@@ -5,7 +5,7 @@ const MY_KEY = '7h0kAOUL37scIrO9xx5ytw==SyFOdl8E0InvX32m';
 
 const instance = axios.create({
   baseURL: BASIC_URL,
-  timeout: 2000,
+  timeout: 500,
   headers: { 'X-Api-Key': MY_KEY },
 });
 

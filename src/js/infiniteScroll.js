@@ -1,13 +1,14 @@
 // ********* infinite scroll
 import throttle  from "lodash.throttle";
 
-//const SCROLL_DELAY = 500;
-
 class InfScroll {
+  #scrollThreshold = 0.5;
   #onThreshold;
-  constructor(scrollDelay) {
+
+  constructor(onScrollThreshold, scrollDelay, scrollThreshold) {
     this.scrollHandler = throttle(this.checkPosition, scrollDelay).bind(this);
-    this.#onThreshold = null;
+    this.#onThreshold = onScrollThreshold;
+    this.#scrollThreshold = scrollThreshold;
   }
 
   enableInfScroll() {
@@ -20,22 +21,14 @@ class InfScroll {
     window.removeEventListener('resize', this.scrollHandler);
   }
 
-  set onThreshold(func) {
-    this.#onThreshold = func;
-  }
-
   checkPosition() {
-    // Нам потребуется знать высоту документа и высоту экрана:
-    const height = document.body.offsetHeight;
     const screenHeight = window.innerHeight;
-    // Записываем, сколько пикселей пользователь уже проскроллил:
-    const scrolled = window.scrollY;
-    // Обозначим порог - четверть экрана до конца страницы:
-    const threshold = height - screenHeight / 4;
-    // Отслеживаем, где находится низ экрана относительно страницы:
-    const position = scrolled + screenHeight;
+    // порог
+    const threshold =
+      document.body.offsetHeight - screenHeight * this.#scrollThreshold;
 
-    if ((position >= threshold) && this.#onThreshold) {
+    // Отслеживаем, где находится низ экрана относительно страницы:
+    if (window.scrollY + screenHeight >= threshold) {
       // Если мы пересекли полосу-порог, вызываем нужное действие
       this.#onThreshold();
     }
