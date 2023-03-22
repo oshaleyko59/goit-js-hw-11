@@ -81,8 +81,7 @@ img {
   cursor: pointer;
 }
 
-#search-form
-button.goit {
+#search-form button.goit {
   position: fixed;
   left: 10%;
   height: 6rem;
@@ -153,3 +152,7 @@ button.goit {
   background-color: transparent;
 }
 
+#search-form button.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
