@@ -26,22 +26,27 @@ import * as show from './js/notifications';
 import refs from './js/referrals';
 import GalleryManager from './js/galleryManager';
 import fetchRandomNoun from './js/fetchRandomNoun';
+import getRandomWord from './js/words';
 
 const infScrAllowed = true;
-const galleryMngr =
-  infScrAllowed ? new GalleryManager(loadMore)
-    : new GalleryManager();
 
 if (infScrAllowed) {
-  refs.btnLoadMore.addEventListener('click', handleLoadMoreClick);
-} /*
- else {
   refs.btnLoadMore.remove();
-} */
+} else {
+  refs.btnLoadMore.addEventListener('click', loadMore);
+}
+
+const galleryMngr = new GalleryManager({
+  onScrollThreshold: infScrAllowed? loadMore : false,
+  onSuccess,
+  onError,
+});
+
 
 //initialize notifications settings
 show.init();
 show.info(CONF.NO_INPUT_GOIT);
+
 refs.btnGoIt.addEventListener('click', handleGoItClick);
 
 refs.form.addEventListener(
@@ -52,6 +57,21 @@ refs.form.addEventListener(
 
 
 /* ************************ end of sync code *************************** */
+
+function onSuccess(clue, totalHits, loadedHits, hits) {
+  show.success(CONF.getImgNumberStr(clue, totalHits, loadedHits));
+  refs.appendGallery(hits);
+  if (!infScrAllowed) {
+    refs.showBtnLoadMore();
+  }
+}
+
+function onError(e) {
+  if (!infScrAllowed) {
+    refs.hideBtnLoadMore();
+  }
+  show.error(e.message);
+}
 
 // *** listener callback for submit
 function handleSubmit(e) {
@@ -73,45 +93,41 @@ function handleSubmit(e) {
     // new search
     refs.clearGalleryContent();
     galleryMngr.startOver(clue);
+   // showSuccess();
     return;
   }
 
   //same search
   if (galleryMngr.isMoreToLoad()) {
     galleryMngr.nextPage();
+   // showSuccess();
     return;
   }
 
   //same search, and no more to load
-  galleryMngr.endThisSearch();
+  show.warning(CONF.getNoMoreImages(galleryMngr.totalHits));
+  refs.scrollTillEnd();
   return;
 }
 
-// *** listener call-back for GOIT btn
+// *** call-back for GOIT btn listener
 async function handleGoItClick() {
-  refs.clearGalleryContent();
-
   let rand_noun;
-  await fetchRandomNoun()
+  //console.time('randNoun');
+  await  fetchRandomNoun()
       .then(r => (rand_noun = r.data.word))
-      .catch(e => {
-        refs.input.value = '';
-        show.error('fetchRandomNoun: ' + e.message);
-        return;
+    .catch(e => {
+      console.log('fetchRandomNoun:', e.message);
+      // it's a substitution for site failure - happens from time to time :(((
+      rand_noun = getRandomWord();
       });
-
+ // console.timeEnd('randNoun');  console.log(rand_noun);
   refs.input.value = rand_noun;
-
+  refs.clearGalleryContent();
   galleryMngr.startOver(rand_noun.toLowerCase());
 }
 
-// *** callback function for infinite scroll
-async function loadMore() {
-  //console.log('@load more');
-  galleryMngr.nextPage();
-}
-
-// *** listener callback for load-More btn
-function handleLoadMoreClick() {
+// *** callback function for listeners forr infinite scroll and load-More btn
+function loadMore() {
   galleryMngr.nextPage();
 }

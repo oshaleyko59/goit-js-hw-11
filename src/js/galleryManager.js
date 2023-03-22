@@ -1,32 +1,44 @@
 import fetchPictures from './fetchPictures';
 import CONF from './config';
-import * as show from './notifications';
 import InfScroll from './infiniteScroll';
-import refs from './referrals';
 
 //gallery manager object
 class GalleryManager {
   #infScrollAllowed;
   #infScrollEnabled;
-  #infScroll = null;
+  #infScroll;
+  #onSuccess;
+  #onError;
 
-  constructor(onScrollThreshold) {
+  constructor({ onScrollThreshold, onSuccess, onError }) {
     this.#infScrollEnabled = false;
     this.#infScrollAllowed = false;
 
     if (onScrollThreshold) {
-      this.#infScroll = new InfScroll(CONF.MIN_TIME_BTW_REQS);
-      this.#infScroll.onThreshold = onScrollThreshold;
+      this.#infScroll = new InfScroll(
+        onScrollThreshold, CONF.MIN_TIME_BTW_REQS,
+        CONF.SCROLL_THRESHOLD
+      );
       this.#infScrollAllowed = true;
     }
+
+    this.#onError = onError;
+    this.#onSuccess = onSuccess;
   }
 
   #page = 1;
   #clue = 'cat';
   #previous_clue = '';
-  #totalHits = 0;
   #loadedHits = 0;
+  #totalHits = 0;
 
+  get totalHits() {
+    return this.#totalHits;
+  }
+
+  get loadedHits() {
+    return this.#loadedHits;
+  }
   clear() {
     this.#previous_clue = '';
   }
@@ -66,7 +78,6 @@ class GalleryManager {
 
     this.#totalHits = r.totalHits;
     this.#loadedHits += r.hits.length;
-    show.success(CONF.getImgNumberStr(this.#totalHits, this.#loadedHits));
 
     // inform of result
     if (this.isMoreToLoad()) {
@@ -75,39 +86,34 @@ class GalleryManager {
         this.#infScroll.enableInfScroll();
         this.#infScrollEnabled = true;
       }
-
-      if (!this.#infScrollAllowed) {
-        refs.showBtnLoadMore();
-      }
     } else if (this.#infScrollEnabled) {
       //no more images to load
       this.#infScroll.disableInfScroll();
       this.#infScrollEnabled = false;
     }
 
-    refs.appendGallery(r.hits);
     return r;
   }
 
   async run() {
     await fetchPictures(this.#clue, this.#page, CONF.FETCH_PER_PAGE)
-      .then(r => this.processResponse(r))
+      .then(r => {
+        this.processResponse(r);
+        if (this.#onSuccess) {
+          this.#onSuccess(this.#clue, this.#totalHits, this.#loadedHits, r.hits);
+        }
+      })
       .catch(e => {
         if (this.#infScrollEnabled) {
           this.#infScroll.disableInfScroll();
           this.#infScrollEnabled = false;
         }
-        if (!this.#infScrollAllowed) {
-          refs.hideBtnLoadMore();
+        if (this.#onError) {
+          this.#onError(e);
+        } else {
+          console.log(e.message);
         }
-        show.error(e.message);
       });
-  }
-
-  // **** only for load-more btn
-  endThisSearch() {
-    show.warning(CONF.getNoMoreImages(this.#totalHits));
-    refs.scrollTillEnd();
   }
 }
 
