@@ -77,12 +77,10 @@ class GalleryManager {
 
   processResponse(r) {
     if (r.hits.length === 0) {
-      if (!this.#infScrollEnabled){
+
       //empty hits array returned -> error
         throw new Error(CONF.NO_IMGS);
-      } else {
-        console.log('it shouldnt happen...');
-        return;
+
       }
     }
 
