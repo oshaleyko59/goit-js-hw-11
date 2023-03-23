@@ -41,6 +41,11 @@ class GalleryManager {
   }
   clear() {
     this.#previous_clue = '';
+    //disable scroll if enabled
+    if (this.#infScrollEnabled) {
+      this.#infScroll.disableInfScroll();
+      this.#infScrollEnabled = false;
+    }
   }
 
   nextPage() {
@@ -79,7 +84,6 @@ class GalleryManager {
     this.#totalHits = r.totalHits;
     this.#loadedHits += r.hits.length;
 
-    // inform of result
     if (this.isMoreToLoad()) {
       //some more images to load
       if (this.#infScrollAllowed && !this.#infScrollEnabled) {
@@ -92,27 +96,22 @@ class GalleryManager {
       this.#infScrollEnabled = false;
     }
 
+    // inform of result
+    this.#onSuccess(this.#clue, this.#totalHits, this.#loadedHits, r.hits);
     return r;
   }
 
-  async run() {
-    await fetchPictures(this.#clue, this.#page, CONF.FETCH_PER_PAGE)
+  run() {
+    fetchPictures(this.#clue, this.#page, CONF.FETCH_PER_PAGE)
       .then(r => {
         this.processResponse(r);
-        if (this.#onSuccess) {
-          this.#onSuccess(this.#clue, this.#totalHits, this.#loadedHits, r.hits);
-        }
       })
       .catch(e => {
         if (this.#infScrollEnabled) {
           this.#infScroll.disableInfScroll();
           this.#infScrollEnabled = false;
         }
-        if (this.#onError) {
-          this.#onError(e);
-        } else {
-          console.log(e.message);
-        }
+        this.#onError(e);
       });
   }
 }

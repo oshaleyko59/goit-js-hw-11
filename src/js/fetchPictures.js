@@ -30,11 +30,18 @@ const instance = axios.create({
   timeout: 2000,
 });
 
-export default async function fetchPictures(hint, page, perPage) {
-  const r = await instance.get(
-    `/?key=${MY_KEY}&q=${hint}
-    &image_type=photo&orientation=horizontal&safesearch=true&per_page=${perPage}&page=${page}`
-  );
+export default async function fetchPictures(query, page, perPage) {
+  const searchParams = new URLSearchParams({
+    key: `${MY_KEY}`,
+    q: `${query}`,
+    image_type: 'photo',
+    orientation: 'horizontal',
+    safesearch: true,
+    per_page: `${perPage}`,
+    page: `${ page }`,
+  });
+
+  const r = await instance.get(`/?${searchParams}`);
   return r.data;
 }
 

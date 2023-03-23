@@ -28,13 +28,12 @@ import GalleryManager from './js/galleryManager';
 import fetchRandomNoun from './js/fetchRandomNoun';
 import getRandomWord from './js/words';
 
-
+//create gallery manager object
 const galleryMngr = new GalleryManager({
   onScrollThreshold: loadMore,
   onSuccess,
   onError,
 });
-
 
 //initialize notifications settings
 show.init();
@@ -48,12 +47,12 @@ refs.form.addEventListener(
   throttle(handleSubmit, CONF.MIN_TIME_BTW_REQS)
 );
 
-document.body.addEventListener('click', refs.handleButtons2FixSLB.bind(refs));
+//document.body.addEventListener('click', refs.handleButtons2FixSLB.bind(refs));
 
 /* ************************ end of sync code *************************** */
 
-function onSuccess(clue, totalHits, loadedHits, hits) {
-  show.success(CONF.getImgNumberStr(clue, totalHits, loadedHits));
+function onSuccess(query, totalHits, loadedHits, hits) { //TODO: check SLB?
+  show.success(CONF.getImgNumberStr(query, totalHits, loadedHits));
   refs.appendGallery(hits);
    // refs.showBtnLoadMore();
 }
@@ -65,37 +64,27 @@ function onError(e) {
 
 // *** listener callback for submit
 function handleSubmit(e) {
-  //refs.consoleSLB();
-  if (refs.isSLBon()) {
-    return;
-  }
-
   e.preventDefault();
 
   const inputEl = e.target.elements.searchQuery;
-  let clue = inputEl.value.trim().toLowerCase();
-
-  if (clue === '') {
+  let query = inputEl.value.trim();
+  if (query === '') {
     //clear input and output and gallery mngr data
-    galleryMngr.clear();
     inputEl.value = '';
+    galleryMngr.clear();
     refs.clearGalleryContent();
     show.info(CONF.NO_INPUT_GOIT);
     return;
   }
 
-  if (galleryMngr.isNewSearch(clue)) {
-    // new search
+  if (galleryMngr.isNewSearch(query)) { // new search
     refs.clearGalleryContent();
-    galleryMngr.startOver(clue);
-   // showSuccess();
+    galleryMngr.startOver(query);
     return;
   }
 
-  //same search
-  if (galleryMngr.isMoreToLoad()) {
+  if (galleryMngr.isMoreToLoad()) {  //same search
     galleryMngr.nextPage();
-   // showSuccess();
     return;
   }
 
@@ -106,26 +95,26 @@ function handleSubmit(e) {
 }
 
 // *** call-back for GOIT btn listener
-async function handleGoItClick() {
-  //refs.consoleSLB();
-  if (refs.isSLBon()) {
-    return;
+function handleGoItClick() {
+  function go(query) {
+    refs.input.value = query;
+    refs.clearGalleryContent();
+    galleryMngr.startOver(query);
   }
 
-  let rand_noun;
-  //console.time('randNoun');
-  await fetchRandomNoun()
-    .then(r => (rand_noun = r.data.word))
+  fetchRandomNoun()
+    .then(r => {
+      go(r);
+    })
     .catch(e => {
-      console.log('fetchRandomNoun:', e.message);
-      // it's a substitution for site failure - happens from time to time :(((
-      rand_noun = getRandomWord();
+      console.log('fetch Random:', e.message);
+      // it's a substitution for random api - happens from time to time :(((
+      const rand_noun = getRandomWord();
+      go(rand_noun);
     });
-  // console.timeEnd('randNoun'); 
-  refs.input.value = rand_noun;
-  refs.clearGalleryContent();
-  galleryMngr.startOver(rand_noun.toLowerCase());
 }
+
+
 
 // *** callback function for listeners forr infinite scroll and load-More btn
 function loadMore() {

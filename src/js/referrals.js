@@ -6,11 +6,13 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import renderCards from './rendering';
 
 const SIMPLE_L_BOX_OPTS = {
-  captionPosition: 'top',
+  captionPosition: 'top', //
+  scrollZoom: false,
+  showCounter: false,
+  nav: false,
   captionsData: 'alt',
   captionDelay: 250,
   close: false,
-  scrollZoom: false,
   history: false,
 };
 
@@ -21,50 +23,10 @@ class Refs {
     this.btnSubmit = this.input.nextElementSibling;
     this.form = this.input.form;
     this.gallery = this.form.nextElementSibling;
-    this.btnLoadMore = this.gallery.nextElementSibling;
-    this.hideBtnLoadMore();
-
+    //hide Btn LoadMore
+    this.gallery.nextElementSibling.style.display = 'none';
     //initialize SimpleLightBox
     this.SLBGallery = new SimpleLightbox('.gallery a', SIMPLE_L_BOX_OPTS);
-    //EVENTS IN SLB NOT WORKING :(((
-    //  this.SLBGallery.on('show.simplelightbox', testSLB);
-    /* function () {
-      conso le.log('opened slb');
-      this.btnGoIt.disabled = true;
-      this.btnSubmit.disabled = true;
-    } */
-    //  this.SLBGallery.on('closed.simplelightbox', testSLB1);
-    /* function () {
-      cons ole.log('closed slb');
-      this.btnGoIt.disabled = false;
-      this.btnSubmit.disabled = false;
-    } */
-    /*
-    this.SLBGallery.on('error.simplelightbox', function (e) {
-      console.log(e); // some usefull information
-    }); */
-  }
-  //EVENTS IN SLB NOT WORKING :((( - this is "kostyl"
-  handleButtons2FixSLB() {
-    if (refs.isSLBon()) {
-      if (!this.btnGoIt.disabled) {
-       // console.log('bts disabled');
-        this.btnGoIt.disabled = true;
-        this.btnSubmit.disabled = true;
-        this.btnGoIt.classList.add('disabled');
-        this.btnSubmit.classList.add('disabled');
-      }
-    } else if (this.btnGoIt.disabled) {
-     // console.log('bts enabled');
-      this.btnGoIt.disabled = false;
-      this.btnSubmit.disabled = false;
-      this.btnGoIt.classList.remove('disabled');
-      this.btnSubmit.classList.remove('disabled');
-    }
-  }
-
-  isSLBon() {
-    return this.SLBGallery.isOpen || this.SLBGallery.currentImage;
   }
 
   clearGalleryContent() {
@@ -94,7 +56,13 @@ class Refs {
       behavior: 'smooth',
     });
   }
+}
 
+const refs = new Refs();
+export default refs;
+
+
+// ****************************************************
   // ***** for load-more btn only
   // #loadMoreBtnShown;
 
@@ -102,12 +70,12 @@ class Refs {
     this.btnLoadMore.style.display = 'block';
     this.#loadMoreBtnShown = true;
   }
- */
+
   hideBtnLoadMore() {
     this.btnLoadMore.style.display = 'none';
-    // this.#loadMoreBtnShown = false;
+    this.#loadMoreBtnShown = false;
   }
-
+ */
   /*   get loadMoreBtnShown() {
     return this.#loadMoreBtnShown;
   } */
@@ -119,7 +87,14 @@ class Refs {
     return this.gallery.childElementCount;
   }
  */
-}
 
-const refs = new Refs();
-export default refs;
+/*   isSLBon() {
+    consol e.log(
+      'SLBon',
+      this.SLBGallery.isOpen ||
+        this.SLBGallery.currentImage, document.body.classList.contains(
+          'simple-lightbox'
+        )
+    );
+    return this.SLBGallery.isOpen || this.SLBGallery.currentImage;
+  } */

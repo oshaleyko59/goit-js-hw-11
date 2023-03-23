@@ -11,16 +11,19 @@ class InfScroll {
     this.#scrollThreshold = scrollThreshold;
   }
 
+  // *** enable when there is something to load
   enableInfScroll() {
     window.addEventListener('scroll', this.scrollHandler);
     window.addEventListener('resize', this.scrollHandler);
   }
 
+  // *** disable when there is nothing to load
   disableInfScroll() {
     window.removeEventListener('scroll', this.scrollHandler);
     window.removeEventListener('resize', this.scrollHandler);
   }
 
+  // *** scroll event handler
   checkPosition() {
     const screenHeight = window.innerHeight;
     // порог
