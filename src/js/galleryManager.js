@@ -77,8 +77,13 @@ class GalleryManager {
 
   processResponse(r) {
     if (r.hits.length === 0) {
+      if (!this.#infScrollEnabled){
       //empty hits array returned -> error
-      throw new Error(CONF.NO_IMGS);
+        throw new Error(CONF.NO_IMGS);
+      } else {
+        console.log('it shouldnt happen...');
+        return;
+      }
     }
 
     this.#totalHits = r.totalHits;
@@ -90,11 +95,12 @@ class GalleryManager {
         this.#infScroll.enableInfScroll();
         this.#infScrollEnabled = true;
       }
-    } else if (this.#infScrollEnabled) {
+    } else {
+      if (this.#infScrollEnabled) {
       //no more images to load
       this.#infScroll.disableInfScroll();
       this.#infScrollEnabled = false;
-    }
+    }}
 
     // inform of result
     this.#onSuccess(this.#clue, this.#totalHits, this.#loadedHits, r.hits);
