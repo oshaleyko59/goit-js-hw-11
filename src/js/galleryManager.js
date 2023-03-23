@@ -80,8 +80,6 @@ class GalleryManager {
 
       //empty hits array returned -> error
         throw new Error(CONF.NO_IMGS);
-
-      }
     }
 
     this.#totalHits = r.totalHits;
